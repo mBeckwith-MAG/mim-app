@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+:root {
+  --slate-bg: var(--color-slate-50);
+  --slate-light: var(--color-slate-100);
+  --slate-med: var(--color-slate-300);
+  --slate-dark: var(--color-slate-500);
+  --slate-shadow: var(--color-slate-400);
+  --slate-border: var(--color-slate-300);
+  --gray-border: var(--color-gray-300);
+  --text-color: var(--color-black);
+}
+
+@variant dark {
+  :root {
+    --slate-bg: var(--color-slate-700);
+    --slate-light: var(--color-slate-500);
+    --slate-med: var(--color-slate-700);
+    --slate-dark: var(--color-slate-900);
+    --slate-shadow: var(--color-slate-800);
+    --slate-border: var(--color-slate-600);
+    --gray-border: var(--color-gray-600);
+    --text-color: var(--color-slate-200);
+  }
+}
+
+@theme {
+  --color-bg: var(--slate-bg);
+  --color-light: var(--slate-light);
+  --color-med: var(--slate-med);
+  --color-dark: var(--slate-dark);
+  --color-shadow: var(--slate-shadow);
+  --color-border: var(--gray-border);
+  --color-border-light: var(--slate-border);
+  --color-text: var(--text-color);
+}
+
+@layer base {
+  html, body {
+    @apply bg-bg text-text;
+  }
+
+  select {
+    @apply appearance-none border border-border-light p-2 rounded-2xl text-text bg-bg outline-none focus:border-2;
+  }
+}
+
+@layer components {
+  .card {
+      @apply border-t rounded-2xl shadow-lg border-border shadow-shadow;
+  }
+
+  .left-bar {
+    @apply sticky top-30 col-span-1 grid gap-4 border border-border rounded-3xl h-200 p-4;
+  }
+}
