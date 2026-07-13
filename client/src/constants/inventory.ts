@@ -3,6 +3,69 @@ export const BOARDS = {
   inventory: 18400257085
 }
 
+export const Stores = [
+  {
+    name: 'Audi Tampa',
+    abbr: 'AT',
+  },
+  {
+    name: 'BMW Sarasota',
+    abbr: 'BMWS',
+  },
+  {
+    name: 'BMW Tampa',
+    abbr: 'BMWT',
+  },
+  {
+    name: 'Kia Wesley Chapel',
+    abbr: 'KWC',
+  },
+  {
+    name: 'Lamborghini Sarasota',
+    abbr: 'LOS',
+  },
+  {
+    name: 'Land Rover Tampa',
+    abbr: 'LRT',
+  },
+  {
+    name: 'Maserati Tampa',
+    abbr: 'MT',
+  },
+  {
+    name: 'Mini-BMW Wesley Chapel',
+    abbr: 'MINI',
+  },
+  {
+    name: 'Morgan Chevy',
+    abbr: 'MC',
+  },
+  {
+    name: 'Nissan of Clearwater',
+    abbr: 'NOC',
+  },
+  {
+    name: 'Porsche Tampa',
+    abbr: 'PT',
+  },
+  {
+    name: 'Subaru North Tampa',
+    abbr: 'SONT',
+  },
+  {
+    name: 'Tampa Bay Motor Cars',
+    abbr: 'TBMC',
+  },
+  {
+    name: 'VW North Tampa',
+    abbr: 'VWNT',
+  },
+  {
+    name: 'Wesley Chapel Nissan',
+    abbr: 'WCN',
+  },
+]
+
 export const Columns = {
   SUBTASKS: 'subtasks_mm0zvda4',
   ASSIGNED_PERSON: 'person',
@@ -70,3 +133,7 @@ export const titleOrPayoffOptions = [
   'Title',
   'Payoff'
 ]
+
+export const SaleOptions = ['Single', 'Bulk']
+export const TitleOptions = ['Paper', 'EFT', 'OOS']
+export const PurchaseOptions = [...SaleOptions, 'Dealshield', 'Enterprise']

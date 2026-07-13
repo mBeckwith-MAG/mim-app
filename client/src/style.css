@@ -9,6 +9,9 @@
   --slate-border: var(--color-slate-300);
   --gray-border: var(--color-gray-300);
   --text-color: var(--color-black);
+  --button-default: var(--color-sky-500);
+  --button-light: var(--color-sky-300);
+  --button-dark: var(--color-sky-800);
 }
 
 @variant dark {
@@ -33,6 +36,9 @@
   --color-border: var(--gray-border);
   --color-border-light: var(--slate-border);
   --color-text: var(--text-color);
+  --color-button: var(--button-default);
+  --color-button-light: var(--button-light);
+  --color-button-dark: var(--button-dark);
 }
 
 @layer base {
@@ -52,5 +58,11 @@
 
   .left-bar {
     @apply sticky top-30 col-span-1 grid gap-4 border border-border rounded-3xl h-200 p-4;
+  }
+
+  .btn {
+    @apply border p-4 text-center rounded-2xl transition-all duration-300 cursor-pointer w-full;
+    @apply bg-button hover:bg-button-light border-border;
+    @apply text-slate-200 hover:text-slate-600 dark:text-black;
   }
 }

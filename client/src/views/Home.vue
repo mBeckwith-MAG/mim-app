@@ -5,12 +5,17 @@
       <div class="grid grid-cols-6 p-4">
         <Card class="sticky top-30 h-fit">
           <template #body>
-              <ItemSearch class="border border-border-light rounded-2xl p-2 w-full focus:outline-none focus:border-2 focus:border-border-light" v-model="searchQuery" />
-              <FilterDropdown filterName="carType" :options="carTypeOptions" class="mt-10" v-model="searchQuery" />
-              <FilterDropdown filterName="status" :options="statusOptions" class="mt-4" v-model="searchQuery" />
-              <FilterDropdown filterName="submitBy" :options="submitters" class="mt-4" v-model="searchQuery" />
-              <FilterDropdown filterName="carOrigin" :options="[ ...newOriginOptions, ...usedOriginOptions ]" class="mt-4" v-model="searchQuery" />
-              <FilterDropdown filterName="titleOrPayoff" :options="titleOrPayoffOptions" class="mt-4" v-model="searchQuery" />
+            <RouterLink to="add-vehicle">
+              <div class="btn mb-10">
+                ADD VEHICLE
+              </div>
+            </RouterLink>
+            <ItemSearch class="border border-border-light rounded-2xl p-2 w-full focus:outline-none focus:border-2 focus:border-border-light" v-model="searchQuery" />
+            <Dropdown name="carType" :options="carTypeOptions" class="mt-10" v-model="searchQuery" />
+            <Dropdown name="status" :options="statusOptions" class="mt-4" v-model="searchQuery" />
+            <Dropdown name="submitBy" :options="submitters" class="mt-4" v-model="searchQuery" />
+            <Dropdown name="carOrigin" :options="[ ...newOriginOptions, ...usedOriginOptions ]" class="mt-4" v-model="searchQuery" />
+            <Dropdown name="titleOrPayoff" :options="titleOrPayoffOptions" class="mt-4" v-model="searchQuery" />
           </template>
         </Card>
         <div class="col-span-5">
@@ -32,7 +37,7 @@ import type { Item } from '../types/inventory';
 import Card from '../components/Card.vue';
 import ItemCard from '../components/inventory/ItemCard.vue';
 import ItemSearch from '../components/ItemSearch.vue';
-import FilterDropdown from '../components/FilterDropdown.vue';
+import Dropdown from '../components/Dropdown.vue';
 
 const loading = ref(true)
 const boardItems: Ref<InventoryItem[]> = ref([])
