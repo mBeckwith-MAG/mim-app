@@ -9,3 +9,9 @@ export interface Item {
   name: string
   column_values: Array<ColVal>
 }
+
+export interface RawFile {
+  ui:string
+  file: File
+  preview: string
+}

@@ -1,10 +1,9 @@
 <template>
-  <Column>
+  <div class="grid gap-2">
     <label for="inventory-store-list">Choose a Store</label>
     <select
       name="selected-store"
       id="inventory-store-list"
-      class="ps-2 border border-slate-300 rounded focus:border-2 focus:border-slate-400 focus:outline-none"
       v-model="selectedStore"
       @change="handleSelect"
     >
@@ -12,16 +11,14 @@
         {{ store.name }}
       </option>
     </select>
-  </Column>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, type Ref } from 'vue'
-import type { InventoryItem } from '../../models/inventory'
-import { Stores } from '../../constants/inventory'
-import Column from '../../components/column.vue'
+import { Stores } from '../../utilities/constants/inventory'
 
-const selectedStore: Ref<InventoryItem | null> = ref(null)
+const selectedStore: Ref<typeof Stores | null> = ref(null)
 
 const emit = defineEmits(['select-store'])
 

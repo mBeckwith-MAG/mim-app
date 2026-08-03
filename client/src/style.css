@@ -5,7 +5,7 @@
   --slate-light: var(--color-slate-100);
   --slate-med: var(--color-slate-300);
   --slate-dark: var(--color-slate-500);
-  --slate-shadow: var(--color-slate-400);
+  --slate-shadow: var(--color-gray-400);
   --slate-border: var(--color-slate-300);
   --gray-border: var(--color-gray-300);
   --text-color: var(--color-black);
@@ -39,30 +39,132 @@
   --color-button: var(--button-default);
   --color-button-light: var(--button-light);
   --color-button-dark: var(--button-dark);
+  --spacing-sm: calc(var(--spacing) * 2);
+  --spacing-md: calc(var(--spacing) * 4);
+  --spacing-lg: calc(var(--spacing) * 6);
+  --spacing-xl: calc(var(--spacing) * 8);
 }
 
 @layer base {
   html, body {
-    @apply bg-bg text-text;
+    @apply bg-bg text-text [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden;
   }
 
   select {
-    @apply appearance-none border border-border-light p-2 rounded-2xl text-text bg-bg outline-none focus:border-2;
+    @apply appearance-none border border-border-light p-sm rounded-2xl text-text bg-bg outline-none focus:border-2 w-full;
+  }
+
+  textarea {
+    @apply border border-border-light p-sm rounded-2xl text-text bg-bg outline-none focus:border-2 w-full resize-none;
+  }
+
+  input:not([type="file"]) {
+    @apply border border-border-light p-sm rounded-2xl text-text bg-bg outline-none focus:border-2 w-full;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
   }
 }
 
 @layer components {
   .card {
-      @apply border-t rounded-2xl shadow-lg border-border shadow-shadow;
+    @apply rounded-2xl h-full min-h-100 p-sm;
+    @apply border-t border-border;
+    @apply shadow-lg shadow-shadow;
+
+    &>div {
+      @apply flex flex-col gap-md h-full;
+
+      & .card-title {
+        @apply flex justify-between font-thin text-2xl tracking-wider p-md;
+      }
+      
+      & .card-body {
+        @apply grid text-sm tracking-wide;
+      }
+  
+      & .card-footer {
+        @apply flex justify-between mt-auto items-center tracking-wide p-md;
+      }
+    }
+  }
+    
+  .stock-number-input {
+    @apply flex;
+
+    & input {
+      @apply rounded-none rounded-l-2xl;
+    }
+
+    & button {
+      @apply rounded-r-2xl bg-button hover:bg-button-light border-border p-2 font-bold;
+    }
   }
 
-  .left-bar {
-    @apply sticky top-30 col-span-1 grid gap-4 border border-border rounded-3xl h-200 p-4;
+  .badge {
+    @apply flex justify-between gap-sm ps-sm pe-sm rounded-full items-center;
+
+    &.success {
+      @apply text-emerald-700 border-emerald-700 bg-emerald-200 border;
+    }
+  }
+
+  .form-grid {
+    @apply grid grid-rows-2 gap-md p-md;
+
+    & > [class*="-row"] {
+      @apply grid grid-cols-2 gap-md;
+      
+      & > .form-section .card .card-body *:not(.stock-number-input, .badge) {
+        @apply grid gap-lg;
+      }
+
+      & > .form-section .card .card-body *:has(> .badge) {
+        @apply grid grid-cols-7 gap-sm pt-md;
+      }
+
+      & > .form-section .card .card-body *.badge {
+        @apply max-w-25;
+      }
+
+      & > .form-section .card .card-body .additional-info {
+        @apply grid gap-md;
+      }
+    }
+  }
+
+  .filter-bar {
+    @apply grid gap-md p-md bg-bg text-center z-40 transition-all duration-500;
+
+    &.horizontal {
+      @apply fixed top-xl w-full grid grid-cols-6 gap-md shadow-md shadow-shadow;
+
+      &.show {
+        @apply top-30;
+      }
+
+      &> input:first-child {
+        @apply md:h-10 mt-auto;
+      }
+
+      & .toggle {
+        @apply p-0.5;
+        
+        &::after {
+          @apply content-['...'] absolute bottom-0 left-0 right-0 cursor-pointer;
+        }
+      }
+    }
   }
 
   .btn {
-    @apply border p-4 text-center rounded-2xl transition-all duration-300 cursor-pointer w-full;
-    @apply bg-button hover:bg-button-light border-border;
-    @apply text-slate-200 hover:text-slate-600 dark:text-black;
+    @apply border border-border rounded-lg p-sm cursor-pointer text-sm;
   }
 }

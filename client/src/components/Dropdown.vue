@@ -1,9 +1,9 @@
 <template>
     <div class="grid gap-2">
-        <label :for="`filterDropdown-${name}`">{{ displayName }}</label>
-        <select :id="`filterDropdown-${name}`" v-model="model">
+        <label :for="`dropdown-${name}`">{{ displayName }}</label>
+        <select :id="`dropdown-${name}`" v-model="model">
             <option value=""></option>
-            <option v-for="(option, index) in options" :key="`${name}-option-${index}`" :value="option.toLowerCase()">{{ option }}</option>
+            <option v-for="(option, index) in options" :key="`${name}-option-${index}`" :value="option">{{ option }}</option>
         </select>
     </div>
 </template>

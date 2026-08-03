@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@iconify-vue/nimbus": "^1.0.3",
+    "@iconify-vue/system-uicons": "^1.0.3",
     "@tailwindcss/vite": "^4.3.2",
     "@vueuse/core": "^14.3.0",
     "tailwindcss": "^4.3.2",

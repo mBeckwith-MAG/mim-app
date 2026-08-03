@@ -1,13 +1,12 @@
 <template>
   <div class="grid gap-2">
-        <label :for="`form-input-${name}`">{{ displayName }}</label>
-        <input
-          :type="inputType"
-          :id="`form-input-${name}`"
-          class="ps-2 border rounded focus:border-2 focus:outline-none"
-          v-model="model"
-        />
-    </div>
+    <label :for="`form-input-${name}`">{{ displayName }}</label>
+    <input
+      :type="inputType"
+      :id="`form-input-${name}`"
+      v-model="model"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
