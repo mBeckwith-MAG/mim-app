@@ -5,7 +5,7 @@ const path = require('path')
 const fs = require('fs') 
 const { readFileSync } = require('fs') 
 const { ApiClient } = require('@mondaydotcomorg/api')
-const { BOARDS, Columns, GetBoardQuery, CreateItemQuery, AddFileQuery, GetItemQuery } = require('./utils/constants.js')
+const { BOARDS, Columns, GetBoardQuery, CreateItemQuery, AddFileQuery, GetItemQuery, UpdateItemQuery } = require('./utils/constants.js')
 require('dotenv').config()
 
 const PORT = 8080
@@ -63,13 +63,7 @@ app.post('/api/inventory/add-vehicle', upload.array('attachments'), async (req, 
             stockNumbers = JSON.parse(req.body.stockNumbers)
         }
 
-        console.log('Form Text Data:', req.body)
-        console.log('Uploaded Files:', req.files)
-        console.log('Stock Numbers:', stockNumbers)
-
-
         await stockNumbers.forEach(stockNumber => createItem(boardId, stockNumber, req.body, req.files))
-        
 
         res.status(200).json({ message: 'Data received successfully!' })
     } catch (error) {
@@ -90,6 +84,21 @@ app.get('/api/inventory/edit-vehicle/:itemId', async (req, res) => {
         console.error("There was an issue getting the item with the id", itemId, err)
     }
 })
+
+app.post('/api/inventory/update/:itemId', upload.array('attachments'), async (req, res) => {
+    const itemId = String(req.params.itemId)
+    const boardId = String(BOARDS.inventory)
+    const columnData = req.body
+    try {
+        await updateItem(boardId, itemId, req.body, req.files)
+
+        res.status(200).json({ message: 'Data received successfully!' })
+    } catch (error) {
+        res.status(400).json({ error: 'Failed to process request data' })
+    }
+})
+
+
 
 app.listen(PORT, ()=> console.log(`Listening on: http://localhost:${PORT}`))
 
@@ -121,6 +130,78 @@ async function createItem(boardId, stockNumber, columnData, files) {
             }
         })
     })
+}
+
+async function updateItem(boardId, itemId, columnData, files) {
+    const fileColumnId = Columns.ATTACHMENTS
+    const formattedData = formatUpdateColumns(columnData)
+    
+    await mondayClient.request(UpdateItemQuery, { boardId, itemId, columnData: formattedData }).then((res) => {
+        if(files.length) {
+            files.forEach(async (element) => {
+                try {
+                    const fileBuff = readFileSync(element.path)
+                    const file = new File([fileBuff], element.originalname, { type: element.mimetype })
+                    await mondayClient.request(AddFileQuery, { itemId, fileColumnId, file })
+                } catch(err) {
+                    console.error("Update Error", err)
+                } finally {
+                    fs.unlink(element.path, (err) => {
+                        if (err) {
+                            console.error(`Failed to delete temporary file ${element.path}:`, err) 
+                        } else {
+                            console.log(`Successfully removed temporary file: ${element.path}`) 
+                        }
+                    }) 
+                }
+            })
+        }
+    })
+}
+
+function formatUpdateColumns(columnData) {
+    const { titleOrPayoff, titleType, lienHolder, payoffAmount, perDiem, goodTill, formNotes, isReversal } = columnData
+
+    const newValues = {
+        "status": {
+            "label": "Updated"
+        }
+    }
+
+    if(titleOrPayoff) {
+        newValues[Columns.TITLE_OR_PAYOFF] = { 
+            "label": titleOrPayoff 
+        }
+    }
+    if(titleType) {
+        newValues[Columns.TITLE_STATUS] = { 
+            "label": titleType 
+        }
+    }
+    if(lienHolder) {
+        newValues[Columns.LIEN_HOLDER] = lienHolder
+    }
+    if(payoffAmount) {
+        newValues[Columns.PAYOFF_AMOUNT] = payoffAmount
+    }
+    if(perDiem) {
+        newValues[Columns.PER_DIAM] = perDiem
+    }
+    if(goodTill) {
+        newValues[Columns.GOOD_TILL_DATE] = goodTill
+    }
+    if(formNotes) {
+        newValues[Columns.FORM_NOTES] = formNotes
+    }
+    if(isReversal === true || isReversal === "true") {
+        newValues[Columns.REVERSAL] = { 
+            "checked": "true" 
+        }
+    }
+
+    console.log("Values", newValues)
+
+    return JSON.stringify(newValues)
 }
 
 function formatColumnData(columnData) {

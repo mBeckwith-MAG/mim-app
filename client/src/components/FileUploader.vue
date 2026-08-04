@@ -24,7 +24,7 @@
     </label>
 
 
-    <div v-if="fileList.length > 0" class="fixed top-0 m-2 right-0 grid gap-3 max-h-dvh overflow-y-scroll [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden">
+    <div v-if="fileList.length > 0" class="fixed top-18 m-2 right-0 grid gap-3 max-h-dvh overflow-y-scroll [-ms-overflow-style:none] scrollbar-none [&::-webkit-scrollbar]:hidden">
       <div 
       v-for="item in fileList" 
       :key="item.id" 

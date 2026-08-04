@@ -7,7 +7,7 @@
             <div class="truncate" v-if="!canEdit">
                 {{ model || altText }}
             </div>
-            <input v-else v-model="model" :type="inputType" />
+            <input v-else v-model="model" :placeholder="altText" :type="inputType" />
         </div>
     </div>
 </template>

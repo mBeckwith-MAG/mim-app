@@ -1,4 +1,9 @@
-<template>{{ dateStr }}</template>
+<template>
+    <div class="grid grid-cols-2 p-2 items-center">
+        <div><slot /></div>
+        <div class="text-end">{{ dateStr }}</div>
+    </div>
+</template>
 <script setup lang="ts">
 import { computed } from 'vue';
 const props = defineProps({
@@ -8,14 +13,8 @@ const props = defineProps({
     }
 })
 
-// const dateStr: Ref<string | null> = ref(null)
-
 const dateStr = computed(() => {
-    console.log("Date:", props.date)
-
     const dateData = props.date.split('-')
-
-
     let [ _, month, day ] = dateData
 
     if(day.split(' ').length > 1) {

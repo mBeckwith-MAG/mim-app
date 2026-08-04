@@ -94,3 +94,14 @@ export const AddFileQuery = `
             url    
         }
     }`
+
+export const UpdateItemQuery = `
+    mutation UpdateMultipleColumnValues($boardId: ID!, $itemId: ID!, $columnData: JSON!) {
+        change_multiple_column_values(
+            board_id: $boardId
+            item_id: $itemId
+            column_values: $columnData
+        ) {
+            id
+        }
+    }`

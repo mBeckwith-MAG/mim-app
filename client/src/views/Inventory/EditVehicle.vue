@@ -2,8 +2,8 @@
     <Navigation v-if="stockNumber" :stockNumber />
     <Navigation v-else />
 
-    <div class="absolute top-0 right-0 pt-md pe-md">
-      <div class="btn text-center text-xl font-thin">UPDATE</div>
+    <div v-if="status === 'Reject'" class="absolute top-0 right-0 pt-md pe-md">
+      <div class="btn text-center text-xl font-thin" @click="handleUpdate">UPDATE</div>
     </div>
 
     <div class="grid p-4">
@@ -17,25 +17,38 @@
                         <DisplayData v-model="status" altText="Incomming">Status</DisplayData>
                         <DisplayData v-model="submitBy">Submit By</DisplayData>
                         <DisplayData v-model="email">Email</DisplayData>
-                    </template>
+                        <div class="text-center mt-xl">
+                          <div>
+                            <label for="reversal-checkbox">Reversal</label>
+                            <input type="checkbox" id="reversal-checkbox" v-model="isReversal" />
+                          </div>
+                          <small>Check if this should be considered a Reversal</small>
+                        </div>
+                      </template>
                 </Card>
 
                 <Card>
                     <template #title>Item Dates</template>
                     <template #body>
-                        <DisplayData v-model="createdDate">Created Date</DisplayData>
-                        <DisplayData v-model="startDate" altText="Not Started">Start Date</DisplayData>
-                        <DisplayData v-model="endDate">End Date</DisplayData>
+                        <DateDisplay v-if="createdDate" :date="createdDate">Created Date</DateDisplay>
+                        <DisplayData v-else v-model="createdDate" altText="Doesn't Exist">Created Date</DisplayData>
+                        <DateDisplay v-if="startDate" :date="startDate">Start Date</DateDisplay>
+                        <DisplayData v-else v-model="startDate" altText="Incomming">Start Date</DisplayData>
+                        <DateDisplay v-if="endDate" :date="endDate">End Date</DateDisplay>
+                        <DisplayData v-else v-model="endDate" altText="Not Complete">End Date</DisplayData>
                     </template>
                 </Card>
 
                 <Card v-if="hasPayoff">
                     <template #title>Payoff Information</template>
                     <template #body>
-                        <DisplayData v-model="lienHolder" :canEdit>Lien Holder</DisplayData>
-                        <DisplayData v-model="payoffAmount" :canEdit>Stock Number</DisplayData>
-                        <DisplayData v-model="perDiem" :canEdit>Per Diem</DisplayData>
-                        <DisplayData v-model="goodTill" :canEdit>Good Till</DisplayData>
+                        <DisplayData v-model="newLienHolder" :altText="lienHolder || ''" :canEdit>Lien Holder</DisplayData>
+                        <DisplayData v-model="newPayoffAmount" :altText="String(payoffAmount) || ''" :canEdit>Payoff Amount</DisplayData>
+                        <DisplayData v-model="newPerDiem" :altText="String(perDiem) || ''" :canEdit>Per Diem</DisplayData>
+                        <div v-if="goodTill">
+                          <DateInput v-if="canEdit" v-model="newGoodTill" :currentDate="goodTill">Good Till</DateInput>
+                          <DisplayData v-else v-model="goodTill">Good Till</DisplayData>
+                        </div>
                         <DisplayData v-model="checkStatus">Check Status</DisplayData>
                         <DisplayData v-model="paymentTracking">Payment Tracking</DisplayData>
                     </template>
@@ -50,7 +63,7 @@
                     <template #title>Inventory Notes</template>
                 </NotesDisplay>
 
-                <NotesDisplay :notes="formNotes || ''" :canEdit>
+                <NotesDisplay @update-value="handleNotes" :notes="formNotes || ''" :canEdit>
                     <template #title>Form Notes</template>
                 </NotesDisplay>
 
@@ -72,10 +85,13 @@ import NotesDisplay from '../../components/inventory/NotesDisplay.vue'
 import AttachmentDisplay from '../../components/inventory/AttachmentDisplay.vue'
 import DisplayData from '../../layouts/DisplayData.vue'
 import Card from '../../layouts/card/Card.vue'
+import DateDisplay from '../../components/global/DateDisplay.vue'
+import DateInput from '../../components/global/DateInput.vue'
 
 
 const route = useRoute()
 const hasVehicle = ref(false)
+const UID: Ref<string | null> = ref(null)
 const submitBy: Ref<string | null> = ref(null)
 const email: Ref<string | null> = ref(null)
 const storeName: Ref<string | null> = ref(null)
@@ -99,11 +115,14 @@ const startDate: Ref<string | null> = ref(null)
 const endDate: Ref<string | null> = ref(null)
 const paymentTracking: Ref<string | null> = ref(null)
 const inventoryNotes: Ref<string | null> = ref(null)
-const attachments: Ref<File[] | null> = ref(null)
 
-const attachmentList = computed(() => {
-    return existing_attachments.value?.split(',')
-})
+const attachments: Ref<File[] | null> = ref(null)
+const newTitleOrPayoff: Ref<string | null> = ref(null)
+const newTitleType: Ref<string | null> = ref(null)
+const newLienHolder: Ref<string | null> = ref(null)
+const newPayoffAmount: Ref<number | null> = ref(null)
+const newPerDiem: Ref<number | null> = ref(null)
+const newGoodTill: Ref<string | null> = ref(null)
 
 const refMapping: Record<string, Ref<any>> = {
   SUBMIT_BY: submitBy,
@@ -140,6 +159,9 @@ onMounted(async () => {
     }
     const data = await response.json();
     const { id, name, column_values } = data.item.items[0]
+
+    UID.value = id
+
     const item: Item = { id, name, column_values }
     const vehicle = new InventoryItem(item)
 
@@ -168,15 +190,58 @@ onMounted(async () => {
   }
 });
 
+const attachmentList = computed(() => {
+    return existing_attachments.value?.split(',')
+})
+
 const hasPayoff = computed(() => {
   return titleOrPayoff.value === 'Payoff'
 })
 
-const handleAddFile = (e: File[]) => {
-    attachments.value = e
-}
-
 const canEdit = computed(() => {
     return status.value === 'Reject'
 })
+
+const handleAddFile = (files: File[]) => {
+    attachments.value = files
+}
+
+async function handleUpdate() {
+  const formData = new FormData()
+
+  if(newTitleOrPayoff.value) formData.append('titleOrPayoff', newTitleOrPayoff.value)
+  if(newTitleType.value) formData.append('titleType', newTitleType.value)
+  if(newLienHolder.value) formData.append('lienHolder', newLienHolder.value)
+  if(newPayoffAmount.value) formData.append('payoffAmount', newPayoffAmount.value?.toString())
+  if(newPerDiem.value) formData.append('perDiem', newPerDiem.value?.toString())
+  if(newGoodTill.value) formData.append('goodTill', newGoodTill.value)
+  if(formNotes.value) formData.append('formNotes', formNotes.value)
+  formData.append('isReversal', isReversal.value.toString())
+
+  if(attachments.value && attachments.value.length > 0) {
+    for (let i = 0; i < attachments.value.length; i++) {
+      formData.append('attachments', attachments.value[i])
+    }
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}inventory/update/${UID.value}`, {
+      method: 'POST',
+      body: formData,
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      console.log("Form Data", data)
+    } else {
+      console.error('Submission failed:', response.statusText)
+    }
+  } catch (error) {
+    console.error('Network error occurred:', error)
+  }
+}
+
+function handleNotes(e: HTMLTextAreaElement) {
+  formNotes.value = e.value
+}
 </script>

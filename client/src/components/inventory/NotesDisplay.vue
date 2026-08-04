@@ -14,6 +14,7 @@
                 :placeholder="!edit ? notes : ''"
                 :value="edit ? notes : ''"
                 :disabled="!edit"
+                @change="$emit('update-value', $event.target)"
                 rows="12"
                 class="p-4"
             />

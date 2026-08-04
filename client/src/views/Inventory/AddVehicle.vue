@@ -191,6 +191,7 @@ async function handleSubmit() {
 
     if (response.ok) {
       const data = await response.json()
+      console.log("Form Data", data)
     } else {
       console.error('Submission failed:', response.statusText)
     }
