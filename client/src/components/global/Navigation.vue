@@ -3,7 +3,7 @@
         <div class="flex justify-start gap-lg">
             <div class="text-5xl font-thin">
                 <div v-if="stockNumber">{{ stockNumber }}</div>
-                <div v-else>{{ storeName ? storeName : 'All' }} Inventory</div>
+                <div v-else>{{ storeName ? storeName : isAddForm ? 'Add to' : 'All' }} Inventory</div>
             </div>
 
             <div v-if="showInventoryKey" class="flex justify-evenly gap-md border border-border rounded-2xl p-lg">
@@ -53,5 +53,9 @@ defineProps({
         type: Boolean,
         default: false
     },
+    isAddForm: {
+        type: Boolean,
+        default: false
+    }
 })
 </script>

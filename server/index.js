@@ -2,28 +2,17 @@ const express = require('express')
 const cors = require('cors')
 const multer = require('multer')
 const path = require('path')
-const fs = require('fs') 
-const { readFileSync } = require('fs') 
 const { ApiClient } = require('@mondaydotcomorg/api')
+const { ObjectStorage } = require('@mondaycom/apps-sdk')
 const { BOARDS, Columns, GetBoardQuery, CreateItemQuery, AddFileQuery, GetItemQuery, UpdateItemQuery } = require('./utils/constants.js')
 require('dotenv').config()
 
 const PORT = 8080
 const app = express()
-const token = process.env.MONDAY_API_TOKEN
+const token = process.env.API_TOKEN
 const mondayClient = new ApiClient({ token })
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, '.temp/')
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9) 
-    const fileExtension = path.extname(file.originalname) 
-    cb(null, file.fieldname + '-' + uniqueSuffix + fileExtension) 
-  }
-}) 
-const upload = multer({ storage: storage }) 
+const upload = multer({ storage: multer.memoryStorage() })
 
 app.use(cors())
 app.use(express.json())
@@ -54,6 +43,21 @@ app.get('/api/boards/:boardId', async (req, res) => {
     }
 })
 
+
+app.get('/api/inventory/edit-vehicle/:itemId', async (req, res) => {
+    const itemId = req.params.itemId
+    try {
+        const item = await mondayClient.request(GetItemQuery, { itemId })
+        
+        res.json({
+            success: true,
+            item: item
+        }) 
+    } catch (err) {
+        console.error("There was an issue getting the item with the id", itemId, err)
+    }
+})
+
 app.post('/api/inventory/add-vehicle', upload.array('attachments'), async (req, res) => {
     try {
         const boardId = BOARDS.inventory
@@ -71,92 +75,67 @@ app.post('/api/inventory/add-vehicle', upload.array('attachments'), async (req, 
     }
 })
 
-app.get('/api/inventory/edit-vehicle/:itemId', async (req, res) => {
-    const itemId = req.params.itemId
-    try {
-        const item = await mondayClient.request(GetItemQuery, { itemId })
-
-        res.json({
-            success: true,
-            item: item
-        }) 
-    } catch (err) {
-        console.error("There was an issue getting the item with the id", itemId, err)
-    }
-})
-
 app.post('/api/inventory/update/:itemId', upload.array('attachments'), async (req, res) => {
     const itemId = String(req.params.itemId)
     const boardId = String(BOARDS.inventory)
-    const columnData = req.body
     try {
         await updateItem(boardId, itemId, req.body, req.files)
-
         res.status(200).json({ message: 'Data received successfully!' })
     } catch (error) {
         res.status(400).json({ error: 'Failed to process request data' })
     }
 })
 
+app.listen(PORT, () => console.log(`Listening on Port: ${PORT}`))
 
 
-app.listen(PORT, ()=> console.log(`Listening on: http://localhost:${PORT}`))
+async function uploadFileToMonday(element, itemId, fileColumnId) {
+    const objectStorage = new ObjectStorage()
+    const storageKey = `temp-uploads/${Date.now()}-${element.originalname}`
 
+    try {
+        await objectStorage.uploadFile(storageKey, element.buffer, {
+            contentType: element.mimetype
+        })
 
+        const downloaded = await objectStorage.downloadFile(storageKey)
+
+        const file = new File([downloaded.content], element.originalname, { type: element.mimetype })
+        await mondayClient.request(AddFileQuery, { itemId, fileColumnId, file })
+
+    } catch (err) {
+        console.error("File upload error:", err)
+    } finally {
+        await objectStorage.deleteFile(storageKey)
+    }
+}
 
 
 async function createItem(boardId, stockNumber, columnData, files) {
     const fileColumnId = Columns.ATTACHMENTS
     const formattedData = formatColumnData(columnData)
-    
-    await mondayClient.request(CreateItemQuery, { boardId, stockNumber, columnData: formattedData }).then((res) => {
-        const itemId = res.create_item.id
 
-        files.forEach(async (element) => {
-            try {
-                const fileBuff = readFileSync(element.path)
-                const file = new File([fileBuff], element.originalname, { type: element.mimetype })
-                await mondayClient.request(AddFileQuery, { itemId, fileColumnId, file })
-            } catch(err) {
-                console.error("Add File Error", err)
-            } finally {
-                fs.unlink(element.path, (err) => {
-                    if (err) {
-                        console.error(`Failed to delete temporary file ${element.path}:`, err) 
-                    } else {
-                        console.log(`Successfully removed temporary file: ${element.path}`) 
-                    }
-                }) 
-            }
-        })
-    })
+    const res = await mondayClient.request(CreateItemQuery, { boardId, stockNumber, columnData: formattedData })
+    const itemId = res.create_item.id
+
+    if (files && files.length) {
+        for (const element of files) {
+            await uploadFileToMonday(element, itemId, fileColumnId)
+        }
+    }
 }
 
 async function updateItem(boardId, itemId, columnData, files) {
     const fileColumnId = Columns.ATTACHMENTS
     const formattedData = formatUpdateColumns(columnData)
-    
-    await mondayClient.request(UpdateItemQuery, { boardId, itemId, columnData: formattedData }).then((res) => {
-        if(files.length) {
-            files.forEach(async (element) => {
-                try {
-                    const fileBuff = readFileSync(element.path)
-                    const file = new File([fileBuff], element.originalname, { type: element.mimetype })
-                    await mondayClient.request(AddFileQuery, { itemId, fileColumnId, file })
-                } catch(err) {
-                    console.error("Update Error", err)
-                } finally {
-                    fs.unlink(element.path, (err) => {
-                        if (err) {
-                            console.error(`Failed to delete temporary file ${element.path}:`, err) 
-                        } else {
-                            console.log(`Successfully removed temporary file: ${element.path}`) 
-                        }
-                    }) 
-                }
-            })
+
+    await mondayClient.request(UpdateItemQuery, { boardId, itemId, columnData: formattedData })
+
+    if (files && files.length) {
+        for (const element of files) {
+            await uploadFileToMonday(element, itemId, fileColumnId)
         }
-    })
+    }
 }
 
 function formatUpdateColumns(columnData) {

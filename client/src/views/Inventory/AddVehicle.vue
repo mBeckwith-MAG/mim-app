@@ -115,6 +115,7 @@ import {
   SaleOptions,
   PurchaseOptions,
   titleOrPayoffOptions,
+  BASE_URL,
 } from '../../utilities/constants/inventory.ts'
 import Navigation from '../../components/global/Navigation.vue'
 import Badge from '../../components/global/Badge.vue'
@@ -135,7 +136,7 @@ const perDiem: Ref<number | null> = ref(null)
 const goodTill: Ref<string | null> = ref(null)
 const formNotes: Ref<string | null> = ref(null)
 const isReversal: Ref<boolean> = ref(false)
-const attachments: Ref<File[] | null> = ref(null)
+const attachments: Ref<File[]> = ref([])
 const stockNumbers: Ref<Array<String>> = ref([])
 
 
@@ -184,7 +185,7 @@ async function handleSubmit() {
   }
 
   try {
-    const response = await fetch('http://localhost:8080/api/inventory/add-vehicle', {
+    const response = await fetch(`${BASE_URL}inventory/add-vehicle`, {
       method: 'POST',
       body: formData,
     })
@@ -212,7 +213,7 @@ async function handleSubmit() {
     goodTill.value = null
     formNotes.value = null
     isReversal.value = false
-    attachments.value = null
+    attachments.value = []
     stockNumbers.value = []
   }
 

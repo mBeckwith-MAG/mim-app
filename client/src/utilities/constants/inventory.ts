@@ -1,4 +1,4 @@
-export const BASE_URL = 'http://localhost:8080/api/'
+export const BASE_URL = 'https://bd27f-service-32093452-c0a7fb28.us.monday.app/api/'
 export const BOARDS = {
   inventory_og: 18400257085,
   inventory: 18423287724
