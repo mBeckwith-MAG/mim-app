@@ -2,7 +2,7 @@
     <Navigation v-if="stockNumber" :stockNumber />
     <Navigation v-else />
 
-    <div v-if="status === 'Reject'" class="absolute top-0 right-0 pt-md pe-md">
+    <div v-if="status === 'Reject' && attachments || newTitleOrPayoff || newTitleType || newLienHolder || newPayoffAmount || newPerDiem || newGoodTill" class="absolute top-0 right-0 pt-md pe-md">
       <div class="btn text-center text-xl font-thin" @click="handleUpdate">UPDATE</div>
     </div>
 
@@ -74,7 +74,7 @@
 </template>
 <script setup lang="ts">
 import { onMounted, ref, computed, type Ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 import { InventoryItem } from '../../utilities/models/inventory.ts'
 import { BASE_URL } from '../../utilities/constants/inventory.ts'
@@ -90,6 +90,7 @@ import DateInput from '../../components/global/DateInput.vue'
 
 
 const route = useRoute()
+const router = useRouter()
 const hasVehicle = ref(false)
 const UID: Ref<string | null> = ref(null)
 const submitBy: Ref<string | null> = ref(null)
@@ -238,6 +239,8 @@ async function handleUpdate() {
     }
   } catch (error) {
     console.error('Network error occurred:', error)
+  } finally {
+    router.go(0)
   }
 }
 
