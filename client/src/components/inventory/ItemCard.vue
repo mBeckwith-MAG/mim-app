@@ -101,7 +101,9 @@
                     <RouterLink :to="`/inventory/edit/${item.UID}`">
                         <LinkAltIcon height="1.5em" class="cursor-pointer hover:text-slate-500 transition-all" />
                     </RouterLink>
-                    <FileDownloadIcon height="1.5em" class="cursor-pointer hover:text-slate-500 transition-all" />
+                    <a v-for="file in item.ATTACHMENTS" :href="(file as string)">
+                        <FileDownloadIcon height="1.5em" class="cursor-pointer hover:text-slate-500 transition-all" />
+                    </a>
                 </div>
         </template>
     </Card>
