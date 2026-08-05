@@ -61,7 +61,7 @@ app.get('/api/inventory/edit-vehicle/:itemId', async (req, res) => {
             success: true,
             item: item
         }) 
-    }} catch (err) {
+    } catch (err) {
         console.error("There was an issue getting the item with the id", itemId, err)
         res.status(500).json({ success: false, error: "Failed to retrieve item" })
     }
@@ -76,7 +76,7 @@ app.post('/api/inventory/add-vehicle', upload.array('attachments'), async (req, 
             stockNumbers = JSON.parse(req.body.stockNumbers)
         }
 
-        await Promise.all(stockNumbers.forEach(stockNumber => createItem(boardId, stockNumber, req.body, req.files)))
+        await Promise.all(stockNumbers.map(stockNumber => createItem(boardId, stockNumber, req.body, req.files)))
 
         res.status(200).json({ message: 'Data received successfully!' })
     } catch (error) {
