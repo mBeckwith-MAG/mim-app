@@ -2,7 +2,7 @@
     <Navigation v-if="stockNumber" :stockNumber />
     <Navigation v-else />
 
-    <div v-if="status === 'Reject' && attachments || newTitleOrPayoff || newTitleType || newLienHolder || newPayoffAmount || newPerDiem || newGoodTill" class="absolute top-0 right-0 pt-md pe-md">
+    <div v-if="status === 'Reject' && hasChanged" class="absolute top-0 right-0 pt-md pe-md">
       <div class="btn text-center text-xl font-thin" @click="handleUpdate">UPDATE</div>
     </div>
 
@@ -14,7 +14,7 @@
                     <template #body>
                         <DisplayData v-model="storeName">Store</DisplayData>
                         <DisplayData v-model="carType">Car Type</DisplayData>
-                        <DisplayData v-model="status" altText="Incomming">Status</DisplayData>
+                        <DisplayData v-model="status" altText="Incoming">Status</DisplayData>
                         <DisplayData v-model="submitBy">Submit By</DisplayData>
                         <DisplayData v-model="email">Email</DisplayData>
                         <div class="text-center mt-xl">
@@ -33,7 +33,7 @@
                         <DateDisplay v-if="createdDate" :date="createdDate">Created Date</DateDisplay>
                         <DisplayData v-else v-model="createdDate" altText="Doesn't Exist">Created Date</DisplayData>
                         <DateDisplay v-if="startDate" :date="startDate">Start Date</DateDisplay>
-                        <DisplayData v-else v-model="startDate" altText="Incomming">Start Date</DisplayData>
+                        <DisplayData v-else v-model="startDate" altText="Incoming">Start Date</DisplayData>
                         <DateDisplay v-if="endDate" :date="endDate">End Date</DateDisplay>
                         <DisplayData v-else v-model="endDate" altText="Not Complete">End Date</DisplayData>
                     </template>
@@ -63,7 +63,7 @@
                     <template #title>Inventory Notes</template>
                 </NotesDisplay>
 
-                <NotesDisplay @update-value="handleNotes" :notes="formNotes || ''" :canEdit>
+                <NotesDisplay @update-value="handleNotes" :notes="combinedNotes || ''" :canEdit>
                     <template #title>Form Notes</template>
                 </NotesDisplay>
 
@@ -124,6 +124,12 @@ const newLienHolder: Ref<string | null> = ref(null)
 const newPayoffAmount: Ref<number | null> = ref(null)
 const newPerDiem: Ref<number | null> = ref(null)
 const newGoodTill: Ref<string | null> = ref(null)
+const newNotes: Ref<string | null> = ref(null)
+
+const hasChanged = computed(() => {
+  if(attachments.value || newTitleOrPayoff.value || newTitleType.value || newLienHolder.value || newPayoffAmount.value || newPerDiem.value || newGoodTill.value || newNotes.value) return true
+  return false
+})
 
 const refMapping: Record<string, Ref<any>> = {
   SUBMIT_BY: submitBy,
@@ -192,7 +198,6 @@ onMounted(async () => {
   }
 });
 
-// TODO: Push the Asset IDs as the links so non-users can access the attachments!!
 const attachmentList: ComputedRef<Attachment[]> = computed(() => {
   const files: Array<Attachment> = []
     if(existing_attachments.value && existing_attachments.value.length) {
@@ -230,7 +235,7 @@ async function handleUpdate() {
   if(newPayoffAmount.value) formData.append('payoffAmount', newPayoffAmount.value?.toString())
   if(newPerDiem.value) formData.append('perDiem', newPerDiem.value?.toString())
   if(newGoodTill.value) formData.append('goodTill', newGoodTill.value)
-  if(formNotes.value) formData.append('formNotes', formNotes.value)
+  if(formNotes.value) formData.append('formNotes', `${newNotes.value} \n ${formNotes.value}`)
   formData.append('isReversal', isReversal.value.toString())
 
   if(attachments.value && attachments.value.length > 0) {
@@ -258,7 +263,12 @@ async function handleUpdate() {
   }
 }
 
+const combinedNotes = computed(() => {
+  if(newNotes.value) return [newNotes.value, formNotes.value].join('\n')
+  return formNotes.value
+})
+
 function handleNotes(e: HTMLTextAreaElement) {
-  formNotes.value = e.value
+  newNotes.value = e.value
 }
 </script>

@@ -6,10 +6,8 @@
                 <div :class="['grid gap-sm 2xl:grid-cols-2', `grid-rows-${attachments.length}`]">
                     <div v-for="(file, index) in attachments" :key="`attachment-${index}`">
                         <a :href="file.url">
-                            <div class="border border-border p-2 flex justify-between rounded-2xl items-center">
-                                <div>
-                                    Attachment {{ index + 1 }}: {{ file.name }}
-                                </div>
+                            <div class="border border-border p-sm flex justify-between rounded-2xl items-center">
+                                <small class="truncate">{{ file.name }}</small>
                                 <FileDownloadIcon height="1em" />
                             </div>
                         </a>
