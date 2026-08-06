@@ -9,7 +9,7 @@
             <div v-if="showInventoryKey" class="flex justify-evenly gap-md border border-border rounded-2xl p-lg">
                 <div class="flex gap-sm">
                     <span class="rounded-full h-sm w-sm self-center bg-gray-400" />
-                    <span>Incomming</span>
+                    <span>Incoming</span>
                 </div>
                 <div class="flex gap-sm">
                     <span class="rounded-full h-sm w-sm self-center bg-amber-400" />
