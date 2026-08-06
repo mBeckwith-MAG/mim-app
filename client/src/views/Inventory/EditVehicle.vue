@@ -77,7 +77,7 @@ import { onMounted, ref, computed, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { InventoryItem } from '../../utilities/models/inventory.ts'
-import { BASE_URL, Columns } from '../../utilities/constants/inventory.ts'
+import { Columns, DEV_URL } from '../../utilities/constants/inventory.ts'
 import type { Attachment, Item, RawFiles } from '../../utilities/types/inventory.ts'
 
 import Navigation from '../../components/global/Navigation.vue'
@@ -88,6 +88,8 @@ import Card from '../../layouts/card/Card.vue'
 import DateDisplay from '../../components/global/DateDisplay.vue'
 import DateInput from '../../components/global/DateInput.vue'
 
+import mondaySdk from 'monday-sdk-js'
+const monday = mondaySdk()
 
 const route = useRoute()
 const router = useRouter()
@@ -158,7 +160,15 @@ const refMapping: Record<string, Ref<any>> = {
   INVENTORY_NOTES: inventoryNotes
 }
 
+const BASE_URL: Ref<String | null> = ref(null)
+
 onMounted(async () => {
+  const contextRes = await monday.get("context");
+  const context = (contextRes as any)?.data;
+
+  BASE_URL.value = context?.appVersion?.mondayCodeHostingUrl
+    ? `${context.appVersion.mondayCodeHostingUrl}/api/`
+    : DEV_URL; // fallback for dev
   try {
     const response = await fetch(`${BASE_URL}inventory/edit-vehicle/${route.params.itemId}`)
     if (!response.ok) {
@@ -235,7 +245,7 @@ async function handleUpdate() {
   if(newPayoffAmount.value) formData.append('payoffAmount', newPayoffAmount.value?.toString())
   if(newPerDiem.value) formData.append('perDiem', newPerDiem.value?.toString())
   if(newGoodTill.value) formData.append('goodTill', newGoodTill.value)
-  if(formNotes.value) formData.append('formNotes', `${newNotes.value} \n ${formNotes.value}`)
+  if(newNotes.value) formData.append('formNotes', newNotes.value)
   formData.append('isReversal', isReversal.value.toString())
 
   if(attachments.value && attachments.value.length > 0) {
@@ -264,7 +274,7 @@ async function handleUpdate() {
 }
 
 const combinedNotes = computed(() => {
-  if(newNotes.value) return [newNotes.value, formNotes.value].join('\n')
+  if(newNotes.value) return newNotes.value
   return formNotes.value
 })
 

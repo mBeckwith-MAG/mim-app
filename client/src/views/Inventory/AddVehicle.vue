@@ -114,13 +114,18 @@ import {
   TitleOptions,
   SaleOptions,
   PurchaseOptions,
-  titleOrPayoffOptions,
-  BASE_URL,
+  titleOrPayoffOptions
 } from '../../utilities/constants/inventory.ts'
 import Navigation from '../../components/global/Navigation.vue'
 import Badge from '../../components/global/Badge.vue'
 import FormLayout from '../../components/inventory/FormLayout.vue'
 import FileUploader from '../../components/FileUploader.vue'
+
+import mondaySdk from 'monday-sdk-js'
+const monday = mondaySdk()
+const contextRes = await monday.get("context");
+const context = contextRes.data as any
+const BASE_URL = `${context.appVersion.mondayCodeHostingUrl}/api/`;
 
 const submitBy: Ref<string | null> = ref(null)
 const email: Ref<string | null> = ref(null)

@@ -12,6 +12,7 @@
     "@iconify-vue/system-uicons": "^1.0.3",
     "@tailwindcss/vite": "^4.3.2",
     "@vueuse/core": "^14.3.0",
+    "monday-sdk-js": "^0.5.9",
     "tailwindcss": "^4.3.2",
     "vite-svg-loader": "^5.1.1",
     "vue": "^3.5.39",
