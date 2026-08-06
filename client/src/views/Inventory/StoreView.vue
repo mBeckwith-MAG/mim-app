@@ -38,13 +38,12 @@ const allItems: Ref<InventoryItem[]> = ref([])
 const storeName: Ref<string | null> = ref(null)
 const searchQuery: Ref<string> = ref('')
 const route = useRoute()
-const BASE_URL: Ref<String | null> = ref(null)
 
 onMounted(async () => {
   const contextRes = await monday.get("context");
   const context = (contextRes as any)?.data;
 
-  BASE_URL.value = context?.appVersion?.mondayCodeHostingUrl
+  const BASE_URL = context?.appVersion?.mondayCodeHostingUrl
     ? `${context.appVersion.mondayCodeHostingUrl}/api/`
     : DEV_URL; // fallback for dev
   const { items } = await fetch(`${BASE_URL}boards/${BOARDS.inventory}`).then(res => res.json())

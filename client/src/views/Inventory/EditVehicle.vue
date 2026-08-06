@@ -170,7 +170,7 @@ onMounted(async () => {
     ? `${context.appVersion.mondayCodeHostingUrl}/api/`
     : DEV_URL; // fallback for dev
   try {
-    const response = await fetch(`${BASE_URL}inventory/edit-vehicle/${route.params.itemId}`)
+    const response = await fetch(`${BASE_URL.value}inventory/edit-vehicle/${route.params.itemId}`)
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`)
     }
@@ -215,7 +215,7 @@ const attachmentList: ComputedRef<Attachment[]> = computed(() => {
 
       return parsed.files.map(file => {
         return {
-          url: String(`${BASE_URL}assets/${file.assetId}`),
+          url: String(`${BASE_URL.value}assets/${file.assetId}`),
           name: String(file.name)
         }
       })
@@ -255,7 +255,7 @@ async function handleUpdate() {
   }
 
   try {
-    const response = await fetch(`${BASE_URL}inventory/update/${UID.value}`, {
+    const response = await fetch(`${BASE_URL.value}inventory/update/${UID.value}`, {
       method: 'POST',
       body: formData,
     })
