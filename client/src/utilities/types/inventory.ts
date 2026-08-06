@@ -15,3 +15,19 @@ export interface RawFile {
   file: File
   preview: string
 }
+
+export type RawFiles = {
+  files: Array<FileData>
+}
+
+export type FileData = {
+  name: string,
+  assetId: number,
+  isImage: boolean,
+  fileType: string
+}
+
+export type Attachment = {
+  url: string,
+  name: string
+}

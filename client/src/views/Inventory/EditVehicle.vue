@@ -73,12 +73,12 @@
     </div>
 </template>
 <script setup lang="ts">
-import { onMounted, ref, computed, type Ref } from 'vue'
+import { onMounted, ref, computed, type Ref, type ComputedRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { InventoryItem } from '../../utilities/models/inventory.ts'
-import { BASE_URL } from '../../utilities/constants/inventory.ts'
-import type { Item } from '../../utilities/types/inventory.ts'
+import { BASE_URL, Columns } from '../../utilities/constants/inventory.ts'
+import type { Attachment, Item, RawFiles } from '../../utilities/types/inventory.ts'
 
 import Navigation from '../../components/global/Navigation.vue'
 import NotesDisplay from '../../components/inventory/NotesDisplay.vue'
@@ -167,23 +167,24 @@ onMounted(async () => {
     const vehicle = new InventoryItem(item)
 
     for (const key in refMapping) {
-  if (key in vehicle) {
-    const vehicleValue = vehicle[key as keyof typeof vehicle];
+      if (key in vehicle) {
+        const vehicleValue = vehicle[key as keyof typeof vehicle];
 
-    if (vehicleValue && typeof vehicleValue === 'object' && 'text' in vehicleValue) {
-      if (vehicleValue.text !== null && vehicleValue.text !== '') {
-        
-        if (typeof refMapping[key].value === 'number') {
-          refMapping[key].value = Number(vehicleValue.text)
-        } else {
-          refMapping[key].value = vehicleValue.text
+        if (vehicleValue && typeof vehicleValue === 'object' && 'text' in vehicleValue) {
+          if (vehicleValue.text !== null && vehicleValue.text !== '') {
+            if(vehicleValue.id === Columns.ATTACHMENTS) {
+              refMapping[key].value = (vehicleValue.value || '')
+            } else if (typeof refMapping[key].value === 'number') {
+              refMapping[key].value = Number(vehicleValue.text)
+            } else {
+              refMapping[key].value = vehicleValue.text
+            }
+          }
+        } else if (vehicleValue !== undefined && vehicleValue !== null) {
+          refMapping[key].value = vehicleValue
         }
       }
-    } else if (vehicleValue !== undefined && vehicleValue !== null) {
-      refMapping[key].value = vehicleValue
     }
-  }
-}
     hasVehicle.value = true
 
   } catch (error) {
@@ -191,8 +192,21 @@ onMounted(async () => {
   }
 });
 
-const attachmentList = computed(() => {
-    return existing_attachments.value?.split(',')
+// TODO: Push the Asset IDs as the links so non-users can access the attachments!!
+const attachmentList: ComputedRef<Attachment[]> = computed(() => {
+  const files: Array<Attachment> = []
+    if(existing_attachments.value && existing_attachments.value.length) {
+      const parsed: RawFiles = JSON.parse(String(existing_attachments.value))
+
+      return parsed.files.map(file => {
+        return {
+          url: String(`${BASE_URL}assets/${file.assetId}`),
+          name: String(file.name)
+        }
+      })
+    }
+
+    return files
 })
 
 const hasPayoff = computed(() => {

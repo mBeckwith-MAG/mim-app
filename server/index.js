@@ -4,7 +4,7 @@ const multer = require('multer')
 const path = require('path')
 const { ApiClient } = require('@mondaydotcomorg/api')
 const { ObjectStorage } = require('@mondaycom/apps-sdk')
-const { BOARDS, Columns, GetBoardQuery, CreateItemQuery, AddFileQuery, GetItemQuery, UpdateItemQuery } = require('./utils/constants.js')
+const { BOARDS, Columns, GetBoardQuery, CreateItemQuery, AddFileQuery, GetItemQuery, UpdateItemQuery, GetAssetQuery } = require('./utils/constants.js')
 require('dotenv').config()
 
 const PORT = 8080
@@ -51,6 +51,30 @@ app.get('/api/boards/:boardId', async (req, res) => {
     }
 })
 
+app.get('/api/assets/:assetId', async (req, res) => {
+    const { assetId } = req.params
+    try {
+        const data = await mondayClient.request(GetAssetQuery, { assetId })
+        const asset = data?.assets?.[0]
+
+        if (!asset?.public_url) {
+            return res.status(404).json({ error: 'Asset not found' })
+        }
+
+        const fileResponse = await fetch(asset.public_url)
+        const contentType = fileResponse.headers.get('content-type') || 'application/octet-stream'
+
+        res.setHeader('Content-Type', contentType)
+        res.setHeader('Content-Disposition', `inline; filename="${asset.name}"`)
+
+        const { Readable } = require('stream')
+        Readable.fromWeb(fileResponse.body).pipe(res)
+
+    } catch (err) {
+        console.error('Asset proxy error:', err)
+        res.status(500).json({ error: 'Failed to retrieve file' })
+    }
+})
 
 app.get('/api/inventory/edit-vehicle/:itemId', async (req, res) => {
     const itemId = req.params.itemId

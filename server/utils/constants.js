@@ -105,3 +105,12 @@ export const UpdateItemQuery = `
             id
         }
     }`
+
+export const GetAssetQuery = `
+    query GetAsset($assetId: ID!) {
+        assets(ids: [$assetId]) {
+            id
+            name
+            public_url
+        }
+    }`
