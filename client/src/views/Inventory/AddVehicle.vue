@@ -102,7 +102,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, type Ref } from 'vue'
+import { ref, computed, type Ref, onMounted } from 'vue'
 import Dropdown from '../../components/Dropdown.vue'
 import StoreSelect from '../../components/inventory/store-select.vue'
 import FormInput from '../../components/FormInput.vue'
@@ -123,9 +123,7 @@ import FileUploader from '../../components/FileUploader.vue'
 
 import mondaySdk from 'monday-sdk-js'
 const monday = mondaySdk()
-const contextRes = await monday.get("context");
-const context = contextRes.data as any
-const BASE_URL = `${context.appVersion.mondayCodeHostingUrl}/api/`;
+const BASE_URL: Ref<string | null> = ref(null)
 
 const submitBy: Ref<string | null> = ref(null)
 const email: Ref<string | null> = ref(null)
@@ -144,6 +142,11 @@ const isReversal: Ref<boolean> = ref(false)
 const attachments: Ref<File[]> = ref([])
 const stockNumbers: Ref<Array<String>> = ref([])
 
+onMounted(async () => {
+  const contextRes = await monday.get("context");
+  const context = contextRes.data as any
+  BASE_URL.value = `${context.appVersion.mondayCodeHostingUrl}/api/`;
+})
 
 const hasPayoff = computed(() => {
   return titleOrPayoff.value === 'Payoff'
@@ -190,7 +193,7 @@ async function handleSubmit() {
   }
 
   try {
-    const response = await fetch(`${BASE_URL}inventory/add-vehicle`, {
+    const response = await fetch(`${BASE_URL.value}inventory/add-vehicle`, {
       method: 'POST',
       body: formData,
     })
