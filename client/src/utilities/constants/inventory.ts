@@ -106,6 +106,13 @@ export const carTypeOptions = [
   'Used'
 ]
 
+export const priorityOptions = [
+  'Low',
+  'Medium',
+  'High',
+  'Critical ⚠️️'
+]
+
 export const statusOptions = [
   'Working',
   'Reject',

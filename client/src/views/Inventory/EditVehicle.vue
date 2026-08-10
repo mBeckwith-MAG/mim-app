@@ -17,11 +17,9 @@
                         <DisplayData v-model="status" altText="Incoming">Status</DisplayData>
                         <DisplayData v-model="submitBy">Submit By</DisplayData>
                         <DisplayData v-model="email">Email</DisplayData>
-                        <div class="text-center mt-xl">
-                          <div>
-                            <label for="reversal-checkbox">Reversal</label>
-                            <input type="checkbox" id="reversal-checkbox" v-model="isReversal" />
-                          </div>
+                        <div class="grid gap-sm w-full text-center mt-xl">
+                          <label for="reversal-checkbox">Reversal</label>
+                          <input type="checkbox" id="reversal-checkbox" class="ms-auto me-auto reversal-checkbox" v-model="isReversal" :disabled="!canEdit" />
                           <small>Check if this should be considered a Reversal</small>
                         </div>
                       </template>

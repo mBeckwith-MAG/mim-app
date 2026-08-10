@@ -29,7 +29,7 @@
                     <template #label>Priority</template>
                 </CardData>
                 <CardData>
-                    <template #value><input type="checkbox" :checked="isChecked" class="appearance-none size-5 border border-slate-300 rounded bg-white checked:bg-red-500 relative after:content-[''] after:absolute after:hidden checked:after:block after:left-1.5 after:top-0.5 after:w-1.5 after:h-2.5 after:border-white after:border-r-2 after:border-b-2 after:rotate-45" disabled /></template>
+                    <template #value><input type="checkbox" :checked="isChecked" class="reversal-checkbox" disabled /></template>
                     <template #label>Reversal?</template>
                 </CardData>
             </CardSection>
@@ -92,10 +92,11 @@
                         <template #label>Check Status</template>
                     </CardData>
     
-                    <CardData>
+                    <CardData v-if="item.END_DATE.text">
                         <template #value>{{ item.END_DATE?.text ? convertDate(item.END_DATE.text) : '-' }}</template>
                         <template #label>Completed</template>
                     </CardData>
+                     <PriorityDropdown v-if="item.STATUS.text !== 'Done'" :item-id="item.UID" @update-priority="handleUpdatePrio" class="relative -top-3" />
                 </div>
                 <div class="flex justify-end gap-sm">
                     <RouterLink :to="`/inventory/edit/${item.UID}`">
@@ -112,6 +113,7 @@ import Card from '../../layouts/card/Card.vue'
 import CardData from '../../layouts/card/CardData.vue'
 import Notes from '../../layouts/Notes.vue'
 import CardSection from '../../layouts/card/CardSection.vue'
+import PriorityDropdown from './PriorityDropdown.vue'
 
 const props = defineProps({
     item: {
@@ -153,5 +155,10 @@ const convertDate = (dateStr: string) => {
         }
         return [month, day].join('/')
     }
+}
+
+function handleUpdatePrio(e: HTMLSelectElement) {
+    //TODO: Create end point on backend to update Monday Board when selection is changed
+    console.log(e.value)
 }
 </script>

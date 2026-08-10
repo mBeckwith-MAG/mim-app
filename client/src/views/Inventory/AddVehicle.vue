@@ -77,11 +77,9 @@
     <template #additional-info>
       <FileUploader @update:files="handleFilesUpdate" />
       <div class="flex justify-evenly">
-        <div class="text-center">
-          <div>
-            <label for="reversal-checkbox">Reversal</label>
-            <input type="checkbox" id="reversal-checkbox" v-model="isReversal" />
-          </div>
+        <div class="grid gap-sm w-full text-center mt-xl">
+          <label for="reversal-checkbox">Reversal</label>
+          <input type="checkbox" id="reversal-checkbox" class="ms-auto me-auto reversal-checkbox" v-model="isReversal" />
           <small>Check if this should be considered a Reversal</small>
         </div>
         <textarea
@@ -92,7 +90,7 @@
         />
       </div>
       <button
-        class="btn"
+        class="btn btn-md"
         @click="handleSubmit"
       >
         Submit
