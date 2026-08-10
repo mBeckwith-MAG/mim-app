@@ -88,9 +88,9 @@ import DateInput from '../../components/global/DateInput.vue'
 
 import mondaySdk from 'monday-sdk-js'
 const monday = mondaySdk()
-
 const route = useRoute()
 const router = useRouter()
+
 const hasVehicle = ref(false)
 const UID: Ref<string | null> = ref(null)
 const submitBy: Ref<string | null> = ref(null)

@@ -94,7 +94,7 @@
     
                     <CardData v-if="item.END_DATE.text">
                         <template #value>{{ item.END_DATE?.text ? convertDate(item.END_DATE.text) : '-' }}</template>
-                        <template #label>Completed</template>
+                        <template #label>{{ item.STATUS.text === 'Reject' ? 'Rejected' : 'Completed'}}</template>
                     </CardData>
                      <PriorityDropdown v-if="item.STATUS.text !== 'Done'" :item-id="item.UID" @update-priority="handleUpdatePrio" class="relative -top-3" />
                 </div>
