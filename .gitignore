@@ -16,6 +16,7 @@ dist-ssr
 code.tar.gz
 *.zip
 .temp
+.VSCodeCounter
 
 # Editor directories and files
 *.vscode
