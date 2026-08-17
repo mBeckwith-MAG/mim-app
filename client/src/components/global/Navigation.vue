@@ -28,7 +28,7 @@
 
         <div v-if="showAddVehicle">
             <RouterLink to="/inventory/add-vehicle">
-              <div class="btn mb-12">
+              <div class="btn btn-sm mb-12">
                 <ButtonAddIcon width="2em" />
               </div>
             </RouterLink>

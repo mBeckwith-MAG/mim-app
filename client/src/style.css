@@ -39,6 +39,7 @@
   --color-button: var(--button-default);
   --color-button-light: var(--button-light);
   --color-button-dark: var(--button-dark);
+  --spacing-xs: calc(var(--spacing) * 0.5);
   --spacing-sm: calc(var(--spacing) * 2);
   --spacing-md: calc(var(--spacing) * 4);
   --spacing-lg: calc(var(--spacing) * 6);
@@ -51,7 +52,7 @@
   }
 
   select {
-    @apply appearance-none border border-border-light p-sm rounded-2xl text-text bg-bg outline-none focus:border-2 w-full;
+    @apply appearance-none border border-border-light p-sm rounded-2xl text-text bg-bg outline-none focus:border-2 w-full cursor-pointer;
   }
 
   textarea {
@@ -70,6 +71,11 @@
 
   input[type="number"] {
     -moz-appearance: textfield;
+  }
+
+  input[type="checkbox"] {
+    @apply appearance-none size-5 border border-border rounded relative bg-white cursor-pointer;
+    @apply checked:after:block after:border-white after:content-[''] after:absolute after:hidden after:left-1.5 after:top-0.5 after:w-1.5 after:h-2.5 after:border-r-2 after:border-b-2 after:rotate-45;
   }
 }
 
@@ -95,6 +101,10 @@
       }
     }
   }
+
+  .reversal-checkbox {
+    @apply checked:bg-red-500;
+  }
     
   .stock-number-input {
     @apply flex;
@@ -104,7 +114,7 @@
     }
 
     & button {
-      @apply rounded-r-2xl bg-button hover:bg-button-light border-border p-2 font-bold;
+      @apply rounded-r-2xl bg-button hover:bg-button-light border-border p-2 font-bold cursor-pointer;
     }
   }
 
@@ -165,6 +175,35 @@
   }
 
   .btn {
-    @apply border border-border rounded-lg p-sm cursor-pointer text-sm;
+    @apply flex border border-border rounded-lg cursor-pointer;
+    @apply self-center text-center items-center align-middle justify-center;
+    @apply hover:bg-light;
+    @apply active:bg-bg;
+    
+    &.btn-xs {
+      @apply p-xs text-xs pl-1;
+    }
+    
+    &.btn-sm {
+      @apply p-sm text-sm;
+    }
+    
+    &.btn-md {
+      @apply p-md;
+    }
+    
+    &.btn-lg {
+      @apply p-lg text-lg;
+    }
+    
+    &.btn-xl {
+      @apply p-xl text-xl;
+    }
+
+    &.skinny {
+      padding-top: calc(var(--spacing) / 2);
+      padding-bottom: calc(var(--spacing) / 2);
+      border-radius: var(--spacing-xs);
+    }
   }
 }

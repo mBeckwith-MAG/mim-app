@@ -77,11 +77,9 @@
     <template #additional-info>
       <FileUploader @update:files="handleFilesUpdate" />
       <div class="flex justify-evenly">
-        <div class="text-center">
-          <div>
-            <label for="reversal-checkbox">Reversal</label>
-            <input type="checkbox" id="reversal-checkbox" v-model="isReversal" />
-          </div>
+        <div class="grid gap-sm w-full text-center mt-xl">
+          <label for="reversal-checkbox">Reversal</label>
+          <input type="checkbox" id="reversal-checkbox" class="ms-auto me-auto reversal-checkbox" v-model="isReversal" />
           <small>Check if this should be considered a Reversal</small>
         </div>
         <textarea
@@ -92,7 +90,7 @@
         />
       </div>
       <button
-        class="btn"
+        class="btn btn-md"
         @click="handleSubmit"
       >
         Submit
@@ -143,10 +141,21 @@ const attachments: Ref<File[]> = ref([])
 const stockNumbers: Ref<Array<String>> = ref([])
 
 onMounted(async () => {
-  const contextRes = await monday.get("context");
-  const context = contextRes.data as any
-  BASE_URL.value = `${context.appVersion.mondayCodeHostingUrl}/api/`;
+  try {
+    const contextRes = await monday.get("context");
+    const context = contextRes?.data as any;
+
+    if (!context?.appVersion?.mondayCodeHostingUrl) {
+      console.error("mondayCodeHostingUrl is unavailable");
+      return;
+    }
+
+    BASE_URL.value = `${context.appVersion.mondayCodeHostingUrl}/api/`;
+  } catch (err) {
+    console.error("Failed to get monday context:", err);
+  }
 })
+
 
 const hasPayoff = computed(() => {
   return titleOrPayoff.value === 'Payoff'
@@ -168,6 +177,11 @@ function removeStockNumber(idx: number) {
 }
 
 async function handleSubmit() {
+  if (!BASE_URL.value) {
+    console.error("BASE_URL is not set — cannot submit.");
+    return;
+  }
+  
   const formData = new FormData()
 
   formData.append('submitBy', submitBy.value || '')
