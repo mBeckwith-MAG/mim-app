@@ -106,6 +106,7 @@ import StoreSelect from '../../components/inventory/store-select.vue'
 import FormInput from '../../components/FormInput.vue'
 import StockNumberInput from '../../components/inventory/stock-number-input.vue'
 import {
+  BASE_URL,
   carTypeOptions,
   newOriginOptions,
   usedOriginOptions,
@@ -121,7 +122,6 @@ import FileUploader from '../../components/FileUploader.vue'
 
 import mondaySdk from 'monday-sdk-js'
 const monday = mondaySdk()
-const BASE_URL: Ref<string | null> = ref(null)
 
 const submitBy: Ref<string | null> = ref(null)
 const email: Ref<string | null> = ref(null)
@@ -140,21 +140,19 @@ const isReversal: Ref<boolean> = ref(false)
 const attachments: Ref<File[]> = ref([])
 const stockNumbers: Ref<Array<String>> = ref([])
 
-onMounted(async () => {
-  try {
-    const contextRes = await monday.get("context");
-    const context = contextRes?.data as any;
+// onMounted(async () => {
+//   try {
+//     const contextRes = await monday.get("context");
+//     const context = contextRes?.data as any;
 
-    if (!context?.appVersion?.mondayCodeHostingUrl) {
-      console.error("mondayCodeHostingUrl is unavailable");
-      return;
-    }
-
-    BASE_URL.value = `${context.appVersion.mondayCodeHostingUrl}/api/`;
-  } catch (err) {
-    console.error("Failed to get monday context:", err);
-  }
-})
+//     if (!context?.appVersion?.mondayCodeHostingUrl) {
+//       console.error("mondayCodeHostingUrl is unavailable");
+//       return;
+//     }
+//   } catch (err) {
+//     console.error("Failed to get monday context:", err);
+//   }
+// })
 
 
 const hasPayoff = computed(() => {
@@ -177,7 +175,7 @@ function removeStockNumber(idx: number) {
 }
 
 async function handleSubmit() {
-  if (!BASE_URL.value) {
+  if (!BASE_URL) {
     console.error("BASE_URL is not set — cannot submit.");
     return;
   }
@@ -207,7 +205,7 @@ async function handleSubmit() {
   }
 
   try {
-    const response = await fetch(`${BASE_URL.value}inventory/add-vehicle`, {
+    const response = await fetch(`${BASE_URL}inventory/add-vehicle`, {
       method: 'POST',
       body: formData,
     })
