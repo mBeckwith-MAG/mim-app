@@ -101,6 +101,7 @@
 
 <script setup lang="ts">
 import { ref, computed, type Ref, onMounted } from 'vue'
+import { BASE_URL } from '../../utilities/constants/inventory.ts'
 import Dropdown from '../../components/Dropdown.vue'
 import StoreSelect from '../../components/inventory/store-select.vue'
 import FormInput from '../../components/FormInput.vue'
@@ -121,7 +122,7 @@ import FileUploader from '../../components/FileUploader.vue'
 
 import mondaySdk from 'monday-sdk-js'
 const monday = mondaySdk()
-const BASE_URL: Ref<string | null> = ref(null)
+const url: Ref<string | null> = ref(null)
 
 const submitBy: Ref<string | null> = ref(null)
 const email: Ref<string | null> = ref(null)
@@ -150,7 +151,7 @@ onMounted(async () => {
       return;
     }
 
-    BASE_URL.value = `${context.appVersion.mondayCodeHostingUrl}/api/`;
+    url.value = BASE_URL;
   } catch (err) {
     console.error("Failed to get monday context:", err);
   }
@@ -177,11 +178,11 @@ function removeStockNumber(idx: number) {
 }
 
 async function handleSubmit() {
-  if (!BASE_URL.value) {
+  if (!url.value) {
     console.error("BASE_URL is not set — cannot submit.");
     return;
   }
-  
+
   const formData = new FormData()
 
   formData.append('submitBy', submitBy.value || '')
@@ -207,7 +208,7 @@ async function handleSubmit() {
   }
 
   try {
-    const response = await fetch(`${BASE_URL.value}inventory/add-vehicle`, {
+    const response = await fetch(`${url.value}inventory/add-vehicle`, {
       method: 'POST',
       body: formData,
     })
