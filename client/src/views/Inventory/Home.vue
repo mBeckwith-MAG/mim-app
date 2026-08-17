@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, computed, type Ref } from 'vue'
-import { BOARDS, DEV_URL } from '../../utilities/constants/inventory.ts'
+import { BOARDS, BASE_URL } from '../../utilities/constants/inventory.ts'
 import { InventoryItem } from '../../utilities/models/inventory.ts'
 import type { Item } from '../../utilities/types/inventory.ts'
 import ItemCard from '../../components/inventory/ItemCard.vue'
@@ -30,16 +30,16 @@ import FilterBar from '../../components/inventory/FilterBar.vue'
 const loading = ref(true)
 const boardItems: Ref<InventoryItem[]> = ref([])
 const searchQuery = ref('')
-import mondaySdk from 'monday-sdk-js'
-const monday = mondaySdk()
+// import mondaySdk from 'monday-sdk-js'
+// const monday = mondaySdk()
 
 onMounted(async () => {
-  const contextRes = await monday.get("context");
-  const context = (contextRes as any)?.data;
+  // const contextRes = await monday.get("context");
+  // const context = (contextRes as any)?.data;
 
-  const BASE_URL = context?.appVersion?.mondayCodeHostingUrl
-    ? `${context.appVersion.mondayCodeHostingUrl}/api/`
-    : DEV_URL; // fallback for dev
+  // const BASE_URL = context?.appVersion?.mondayCodeHostingUrl
+  //   ? `${context.appVersion.mondayCodeHostingUrl}/api/`
+  //   : DEV_URL; // fallback for dev
 
 
   const { items } = await fetch(`${BASE_URL}boards/${BOARDS.inventory}`).then(res => res.json())

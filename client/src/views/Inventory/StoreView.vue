@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref, computed, type Ref } from 'vue'
-import { BOARDS, Stores, DEV_URL } from '../../utilities/constants/inventory.ts'
+import { BOARDS, Stores, BASE_URL } from '../../utilities/constants/inventory.ts'
 import { InventoryItem } from '../../utilities/models/inventory.ts'
 import type { Item } from '../../utilities/types/inventory.ts'
 import ItemCard from '../../components/inventory/ItemCard.vue'
@@ -29,8 +29,8 @@ import Navigation from '../../components/global/Navigation.vue'
 import FilterBar from '../../components/inventory/FilterBar.vue'
 import { useRoute } from 'vue-router'
 
-import mondaySdk from 'monday-sdk-js'
-const monday = mondaySdk()
+// import mondaySdk from 'monday-sdk-js'
+// const monday = mondaySdk()
 
 
 const loading = ref(true)
@@ -40,12 +40,12 @@ const searchQuery: Ref<string> = ref('')
 const route = useRoute()
 
 onMounted(async () => {
-  const contextRes = await monday.get("context");
-  const context = (contextRes as any)?.data;
+  // const contextRes = await monday.get("context");
+  // const context = (contextRes as any)?.data;
 
-  const BASE_URL = context?.appVersion?.mondayCodeHostingUrl
-    ? `${context.appVersion.mondayCodeHostingUrl}/api/`
-    : DEV_URL; // fallback for dev
+  // const BASE_URL = context?.appVersion?.mondayCodeHostingUrl
+  //   ? `${context.appVersion.mondayCodeHostingUrl}/api/`
+  //   : DEV_URL; // fallback for dev
   const { items } = await fetch(`${BASE_URL}boards/${BOARDS.inventory}`).then(res => res.json())
   storeName.value = Stores.find(store => store.abbr === String(route.params.storeAbbr).toUpperCase())?.name || null
 

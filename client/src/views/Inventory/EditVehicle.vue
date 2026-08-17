@@ -86,8 +86,8 @@ import Card from '../../layouts/card/Card.vue'
 import DateDisplay from '../../components/global/DateDisplay.vue'
 import DateInput from '../../components/global/DateInput.vue'
 
-import mondaySdk from 'monday-sdk-js'
-const monday = mondaySdk()
+// import mondaySdk from 'monday-sdk-js'
+// const monday = mondaySdk()
 const route = useRoute()
 const router = useRouter()
 

@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, type Ref, onMounted } from 'vue'
+import { ref, computed, type Ref } from 'vue'
 import Dropdown from '../../components/Dropdown.vue'
 import StoreSelect from '../../components/inventory/store-select.vue'
 import FormInput from '../../components/FormInput.vue'
@@ -120,8 +120,8 @@ import Badge from '../../components/global/Badge.vue'
 import FormLayout from '../../components/inventory/FormLayout.vue'
 import FileUploader from '../../components/FileUploader.vue'
 
-import mondaySdk from 'monday-sdk-js'
-const monday = mondaySdk()
+// import mondaySdk from 'monday-sdk-js'
+// const monday = mondaySdk()
 
 const submitBy: Ref<string | null> = ref(null)
 const email: Ref<string | null> = ref(null)
@@ -141,17 +141,18 @@ const attachments: Ref<File[]> = ref([])
 const stockNumbers: Ref<Array<String>> = ref([])
 
 // onMounted(async () => {
-//   try {
-//     const contextRes = await monday.get("context");
-//     const context = contextRes?.data as any;
+//   // try {
+//   //   const contextRes = await monday.get("context");
+//   //   const context = contextRes?.data as any;
 
-//     if (!context?.appVersion?.mondayCodeHostingUrl) {
-//       console.error("mondayCodeHostingUrl is unavailable");
-//       return;
-//     }
-//   } catch (err) {
-//     console.error("Failed to get monday context:", err);
-//   }
+//   //   if (!context?.appVersion?.mondayCodeHostingUrl) {
+//   //     console.error("mondayCodeHostingUrl is unavailable");
+//   //     return;
+//   //   }
+//   // } catch (err) {
+//   //   console.error("Failed to get monday context:", err);
+//   // }
+//   console.log("loading")
 // })
 
 
